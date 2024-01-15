@@ -1,0 +1,721 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_statement_pdf">
+        <t t-call="web.html_container">
+
+            <div t-attf-class="article o_report_layout_standard o_company_#{company.id}_layout"
+                 t-att-data-oe-model="o and o._name"
+                 t-att-data-oe-id="o and o.id"
+                 t-att-data-oe-lang="o and o.env.context.get('lang')">
+                <div class="pt-5">
+
+                    <t t-call="web.address_layout"/>
+                </div>
+                <div class="page">
+                    <div t-attf-class="o_company_#{company.id}_layout"
+                         t-att-style="report_header_style">
+                        <div class="o_background_header">
+                            <div class="float-right">
+                                <h3 class="mt0 text-right"
+                                    t-field="company.report_header"/>
+                            </div>
+
+                            <div class="clearfix mb8"/>
+
+                            <center>
+                                <img style="max-width:70%;" t-if="company.logo"
+                                     t-att-src="image_data_uri(company.logo)"
+                                     alt="Logo"/>
+                            </center>
+                            <center>
+                                <t t-if="not company.is_hide_address">
+
+                                    <p>Tel:&amp;ensp;<span t-esc="company.phone"/>,
+                                        PO
+                                        Box:&amp;ensp;<span t-esc="company.zip"/>,&amp;ensp;
+                                        <span t-esc="company.state_id.name"/>
+                                        - U.A.E.
+                                    </p>
+                                </t>
+                                <t t-if="company.is_hide_address">
+                                    <p></p>
+                                </t>
+                            </center>
+
+                        </div>
+                    </div>
+                    <div style="color: black;font-size:20px;" class="col-xs-12">
+                        <center>
+                            <b>
+                                Account Statement
+                            </b>
+                        </center>
+                        <center>
+                            <p style=" font-size:13px;">
+                                From:
+                                <span t-esc="data['start_date']" t-options="{'widget': 'date'}"/>
+                                To:
+                                <span t-esc="data['end_date']" t-options="{'widget': 'date'}"/>
+                            </p>
+                        </center>
+                    </div>
+                    <div class="col-xs-4" style="margin-top:20px;">
+                        <b>
+                            <span t-esc="partner_details['name']"></span>
+                        </b>
+                        <p>
+                            <span t-esc="partner_details['street']"></span>
+                            <span t-esc="partner_details['street2']"></span>
+                            <br/>
+                            <span t-esc="partner_details['state']"></span>
+                            <span t-esc="partner_details['country']"></span>
+                            <span t-esc="partner_details['zip']"></span>
+                        </p>
+                    </div>
+                    <div class="col-xs-4" style="margin-top:20px;">
+                        <b>
+                            Contact Details
+                        </b>
+                        <p>
+                            <span t-esc="partner_details['contact2']">,</span>
+                            <span t-esc="partner_details['contact1']"></span>
+                        </p>
+
+                    </div>
+                    <div>
+                        <p>Below is the current statement of your account. The
+                            total amount due is
+                            <span t-esc="company.currency_id.name"></span>
+                            <b>
+                                <span t-esc="'{0:,.2f}'.format(get_grand_total_amount)"/>.
+                            </b>
+
+                            <b>
+                                <t t-if="check_entries_ret == 'false'">
+
+                                    <t t-if="company.is_oman_company">
+                                    </t>
+                                    <t t-if="not company.is_oman_company">
+                                        <t t-if="grand_total">
+                                            <span t-esc="'{0:,.2f}'.format(grand_total)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="'{0:,.2f}'.format(0)"/>
+                                        </t>
+                                    </t>
+                                </t>
+                                <t t-elif="check_entries_ret == 'true'">
+
+                                    <t t-if="company.is_oman_company">
+
+                                        <span t-esc="'{0:,.3f}'.format(entry_total)"/>
+                                    </t>
+                                    <t t-if="not company.is_oman_company">
+
+                                        <span t-esc="'{0:,.2f}'.format(entry_total)"/>
+                                    </t>
+                                </t>
+                                <t t-elif="check_status == 'false'">
+
+                                    <t t-if="company.is_oman_company">
+
+                                        <span t-esc="'{0:,.3f}'.format(get_statement_details['total_amount'])"/>
+
+                                    </t>
+
+                                    <t t-if="not company.is_oman_company">
+
+                                        <span t-esc="'{0:,.2f}'.format(get_statement_details['total_amount'])"/>
+
+                                    </t>
+
+                                </t>
+
+                            </b>
+                            between
+                            <b>
+                                <span t-esc="data['start_date']" t-options="{'widget': 'date'}"/>
+                                and
+                                <span t-esc="data['end_date']" t-options="{'widget': 'date'}"/>
+                            </b>
+                        </p>
+                    </div>
+                    <div>
+
+                        <p>In case of any queries or clarifications please feel
+                            free to call us on
+                            <b>
+                                <span t-esc="company.phone"/>
+                            </b>
+                            or email
+                            us
+                            on
+                            <b>
+                                <span t-esc="company.email"/>
+                            </b>
+                        </p>
+                    </div>
+                    <br/>
+                    <style>
+                        table {
+                        border-collapse: collapse;
+                        width: 100%;
+                        }
+
+                        th, td {
+                        border: 1px solid #dddddd;
+                        text-align: center;
+                        padding: 2px;
+                        }
+                    </style>
+                    <table>
+                        <thead class="">
+
+
+                            <tr style="background-color:#4d8ac3;color:white;padding:3px;" class="text-center">
+                                <th style="padding:3px;">SL NO</th>
+                                <th style="padding:3px;">DATE</th>
+                                <th style="padding:3px;">
+                                    VOUCHER NO.
+                                </th>
+                                <th style="padding:3px;">LPO NO</th>
+                                <th style="padding:3px;">DO NO</th>
+                                <th style="padding:3px;">SITE NAME</th>
+                                <th style="padding:3px;">DUE DATE</th>
+                                <th style="padding:3px;">DEBIT</th>
+                                <th style="padding:3px;">CREDIT</th>
+                                <th style="padding:3px;">BALANCE</th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <t t-set="prev_total" t-value="1"/>
+                                <t t-if="previous_total != 0">
+                                    <tr>
+                                        <tbody>
+                                            <t t-set="amt" t-value="0"/>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td style="font-size:13px; text-align:center;">Opening Balance</td>
+
+                                            <td style="font-size:13px; text-align:center;">
+                                                <span t-if="previous_total &gt; 0">
+                                                    <span t-esc="'{0:,.2f}'.format(abs(previous_total))"/>
+                                                    <t t-set="prev_total" t-value="2"/>
+                                                </span>
+                                            </td>
+                                            <td style="font-size:13px; text-align:center;">
+                                                <span t-if="previous_total &lt; 0">
+                                                    <span t-esc="'{0:,.2f}'.format(abs(previous_total))"/>
+                                                    <t t-set="prev_total" t-value="3"/>
+                                                </span>
+                                            </td>
+                                            <td style="font-size:13px; text-align:center;">
+                                                <t t-if="previous_total != 0">
+                                                    <span t-esc="'{0:,.2f}'.format(abs(previous_total))"/>
+                                                    <span t-if="previous_total &lt; 0">
+                                                        Cr
+                                                    </span>
+                                                    <span t-else="">
+                                                        Dr
+                                                    </span>
+                                                </t>
+                                            </td>
+                                        </tbody>
+                                    </tr>
+                                </t>
+
+                                <tr>
+                                    <t t-if="combined_data_set">
+                                        <t t-set="debit_sum" t-value="0"/>
+                                        <t t-set="credit_sum" t-value="0"/>
+                                        <t t-set="balance" t-value="0"/>
+                                        <t t-if="previous_total != 0">
+                                            <t t-set="balance" t-value="previous_total"/>
+                                        </t>
+                                        <t t-set="count" t-value="0"/>
+                                        <t t-set="ogvalue" t-value="0"/>
+                                        <t t-set="previoustotal" t-value="previous_total"/>
+                                        <t t-set="sl_no" t-value="1"/>
+                                        <t t-foreach="combined_data_set" t-as="data">
+                                            <tbody>
+                                                <t t-foreach="combined_data_set[data]" t-as="half">
+                                                    <t t-set="count" t-value="count + 1"/>
+                                                    <tr>
+                                                        <td style="font-size:13px; text-align:center;">
+                                                            <span t-esc="sl_no"/>
+                                                            <span t-set="sl_no" t-value="sl_no + 1"/>
+                                                        </td>
+                                                        <td style="font-size:13px; text-align:center;">
+                                                            <span t-esc="half['date']"/>
+                                                        </td>
+                                                        <td style="font-size:13px; text-align:center;">
+                                                            <span t-esc="half['name']"/>
+                                                        </td>
+                                                        <td style="font-size:13px; text-align:center;">
+                                                            <span t-esc="half['lpo_no']"/>
+                                                        </td>
+                                                        <td style="font-size:13px; text-align:center;">
+                                                            <span t-esc="half['do_no']"/>
+                                                        </td>
+                                                        <td style="font-size:13px; text-align:center;">
+                                                            <span t-esc="half['site_name']"/>
+                                                        </td>
+                                                        <td style="font-size:13px; text-align:center;">
+                                                            <span t-esc="half['due_date']"/>
+                                                        </td>
+
+                                                        <td style="font-size:13px; text-align:center;">
+                                                            <t t-if="half['cash_payment'] == 'INV' and half['amount'] &gt; 0">
+                                                                <span t-esc="'{0:,.2f}'.format(half['amount'])"/>
+                                                                <t t-set="debit_sum"
+                                                                   t-value="debit_sum + half['amount'] "/>
+                                                                <t t-set="ogvalue" t-value="half['amount'] + balance"/>
+                                                                <t t-if="count == 1">
+                                                                    <t t-set="balance" t-value="half['amount'] "/>
+                                                                </t>
+                                                                <t t-set="balance" t-value="ogvalue"/>
+                                                                <t t-if="count == 1">
+                                                                    <t t-set="ogvalue" t-value="0"/>
+                                                                </t>
+                                                            </t>
+                                                        </td>
+                                                        <td style="font-size:13px; text-align:center;">
+                                                            <t t-if="half['cash_payment'] == 'CSH' or half['amount'] &lt; 0">
+                                                                <span t-esc="'{0:,.2f}'.format(abs(half['amount']))"/>
+                                                                <t t-set="credit_sum"
+                                                                   t-value="credit_sum + abs(half['amount']) "/>
+                                                                <t t-set="ogvalue"
+                                                                   t-value="-(abs(half['amount'])) + balance"/>
+                                                                <t t-if="count == 1">
+                                                                    <t t-set="balance" t-value="abs(half['amount']) "/>
+                                                                </t>
+                                                                <t t-set="balance" t-value="ogvalue"/>
+                                                                <t t-if="count == 1">
+                                                                    <t t-set="ogvalue" t-value="0"/>
+                                                                </t>
+                                                            </t>
+
+
+                                                        </td>
+                                                        <td style="font-size:13px; text-align:center;">
+                                                            <t t-if="half['cash_payment'] == 'INV'">
+                                                                <span t-esc="'{0:,.2f}'.format(abs(balance))"/>
+                                                            </t>
+                                                            <t t-elif="half['cash_payment'] == 'CSH'">
+                                                                <span t-esc="'{0:,.2f}'.format(abs(balance))"/>
+                                                            </t>
+                                                            <span t-if="balance &lt; 0">
+                                                                Cr
+                                                            </span>
+                                                            <span t-else="">
+                                                                Dr
+                                                            </span>
+                                                        </td>
+
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </t>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td style="font-size:15px;color: red;font-weight: bold;text-align:center;height:22px">
+                                                Sub Total
+                                            </td>
+                                            <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+                                                <t t-if="prev_total == 2">
+                                                    <span t-esc="'{0:,.2f}'.format(debit_sum + previous_total)"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <span t-esc="'{0:,.2f}'.format(debit_sum)"/>
+                                                </t>
+
+                                            </td>
+                                            <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+                                                <t t-if="prev_total == 3">
+                                                    <span t-esc="'{0:,.2f}'.format(credit_sum + previous_total)"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <span t-esc="'{0:,.2f}'.format(credit_sum)"/>
+                                                </t>
+                                            </td>
+                                            <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+                                                <span t-esc="'{0:,.2f}'.format(abs(balance))"/>
+                                                <span t-if="balance &lt; 0">
+                                                    Cr
+                                                </span>
+                                                <span t-else="">
+                                                    Dr
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tr>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br/>
+                    <br/>
+                    <table>
+
+                        <t t-if="get_pdc_details">
+
+                            <tr>
+                                <td colspan="8"
+                                    style="font-size:15px;color: black;text-align:center;font-weight: bold;height:21px">
+                                    <b>PDC PAYMENTS</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="8" style="height:20px"></td>
+                            </tr>
+                            <tr style="background-color:#4d8ac3;color:white;padding:3px;font-size:15px;">
+                                <th style="text-align:center;">DATE</th>
+                                <!--                                                <th style="text-align:center;">MATURITY DATE</th>-->
+                                <!--                                                <th style="text-align:center;">VOUCHER NO</th>-->
+                                <th style="text-align:center;max-width:120px">CHEQUE NO</th>
+                                <th style="text-align:center;">CHEQUE DATE</th>
+                                <th style="text-align:center;max-width:120px">INVOICE NO</th>
+                                <th style="text-align:center;">DEBIT</th>
+                                <th style="text-align:center;">CREDIT</th>
+                                <th style="text-align:center;">BALANCE</th>
+                            </tr>
+                            <t t-set="pdc_tot" t-value="0"/>
+                            <t t-set="pdc_balance" t-value="0"/>
+                            <t t-if="combined_data_set">
+                                <t t-set="pdc_balance" t-value="credit_sum"/>
+                                <t t-set="pdc_inv_csh" t-value="0"/>
+                                <t t-set="count" t-value="0"/>
+
+                            </t>
+                            <t t-foreach="get_pdc_details" t-as="pdc_data">
+                                <t t-set="count" t-value="count + 1"/>
+                                <t t-set="pdc_tot" t-value="pdc_tot + pdc_data['amount'] "/>
+                                <t t-set="pdc_balance" t-value="pdc_balance - pdc_data['amount'] "/>
+                                <t t-set="pdc_inv_balance"
+                                   t-value="(pdc_inv_csh) - pdc_data['amount']"/>
+                                <t t-if="count == 1">
+                                    <t t-set="pdc_inv_balance"
+                                       t-value="balance - pdc_data['amount']"/>
+                                </t>
+                                <tr>
+                                    <td style=" font-size:13px; text-align:center;">
+                                        <span t-esc="pdc_data['date']"/>
+                                    </td>
+                                    <!--                                                    <td style="font-size:13px;text-align:center">-->
+                                    <!--                                                         <span t-esc="pdc_data['due_date']"/>-->
+                                    <!--                                                    </td>-->
+                                    <!--                                                    <td style="font-size:13px;text-align:center">-->
+                                    <!--                                                       <div style="width:130px;">-->
+                                    <!--                                                           <span t-esc="pdc_data['name']"/>-->
+                                    <!--                                                        </div>-->
+                                    <!--                                                        </td>-->
+                                    <td style="font-size:13px;text-align:center;max-width:120px">
+                                        <span t-esc="pdc_data['reference']"/>
+                                    </td>
+                                    <td style="font-size:13px;text-align:center">
+                                        <span t-esc="pdc_data['date']"/>
+                                    </td>
+                                    <td style="font-size:13px;text-align:center;max-width:120px">
+                                        <span t-esc="pdc_data['invoice_number']"/>
+                                    </td>
+                                    <td style="font-size:13px;text-align:center"></td>
+                                    <td style="font-size:13px;text-align:center">
+                                        <span t-esc="'{0:,.2f}'.format(pdc_data['amount'])"/>
+                                    </td>
+                                    <td style="font-size:13px; text-align:center;">
+                                        <t t-if="pdc_inv_balance">
+                                            <span t-esc="'{0:,.2f}'.format(abs(pdc_inv_balance))"/>
+                                        </t>
+                                        <t t-set="pdc_inv_csh" t-value="pdc_inv_balance"/>
+                                        <t t-set="amt" t-value="pdc_inv_balance"/>
+                                        <t t-if="pdc_inv_balance">
+                                            <span t-if="pdc_inv_balance &lt; 0">
+                                                Cr
+                                            </span>
+                                            <span t-else="">
+                                                Dr
+                                            </span>
+                                        </t>
+                                    </td>
+
+
+                                </tr>
+                            </t>
+                            <tr>
+
+                                <td></td>
+                                <td style=" font-size:15px;color: red;font-weight: bold;text-align:center;">
+                                    <b>PDC Total:</b>
+                                </td>
+                                <!--                                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">-->
+
+                                <!--                                                </td>-->
+                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+
+                                </td>
+                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+                                    <t t-if="pdc_inv_balance">
+                                        <span t-esc="(abs(pdc_inv_balance))"/>
+                                        <span t-if="pdc_inv_balance &lt; 0">
+                                            Cr
+                                        </span>
+                                        <span t-else="">
+                                            Dr
+                                        </span>
+                                    </t>
+                                </td>
+                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+                                    0.00
+                                </td>
+                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+                                    <b>
+                                        <t t-if="prev_total == 3">
+                                            <span t-esc="'{0:,.2f}'.format(pdc_tot + previous_total)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="'{0:,.2f}'.format(pdc_tot)"/>
+                                        </t>
+                                    </b>
+                                </td>
+                                <td></td>
+
+                            </tr>
+                        </t>
+
+                        <t t-if="get_pdc_details">
+                            <tr>
+
+                                <td></td>
+                                <td style=" font-size:15px;color: red;font-weight: bold;text-align:center;">
+                                    Total
+                                </td>
+                                <!--                                            <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">-->
+
+                                <!--                                            </td>-->
+                                <td></td>
+                                <td></td>
+                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+                                    <t t-if="combined_data_set">
+                                        <t t-if="prev_total == 2">
+                                            <span t-esc="'{0:,.2f}'.format(debit_sum + previous_total)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="'{0:,.2f}'.format(debit_sum)"/>
+                                        </t>
+                                    </t>
+                                </td>
+                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+                                    <t t-if="combined_data_set and get_pdc_details">
+                                        <t t-if="prev_total == 3">
+                                            <span t-esc="'{0:,.2f}'.format(credit_sum + pdc_tot + previous_total)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="'{0:,.2f}'.format(credit_sum + pdc_tot)"/>
+                                        </t>
+                                    </t>
+                                    <t t-elif="combined_data_set">
+                                        <t t-if="prev_total == 3">
+                                            <span t-esc="'{0:,.2f}'.format(credit_sum  + previous_total)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="'{0:,.2f}'.format(credit_sum )"/>
+                                        </t>
+
+                                    </t>
+                                </td>
+                                <td></td>
+                            </tr>
+
+
+                            <tr>
+
+                                <td></td>
+                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+                                    Report Total
+                                </td>
+                                <!--                                            <td></td>-->
+                                <td></td>
+                                <td></td>
+                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+                                    <t t-set="first_total" t-value="0"/>
+                                    <t t-if="combined_data_set">
+                                        <t t-if="prev_total == 2">
+                                            <span t-esc="'{0:,.2f}'.format(debit_sum + previous_total)"/>
+                                            <t t-set="first_total" t-value="debit_sum + previous_total"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="'{0:,.2f}'.format(debit_sum)"/>
+                                            <t t-set="first_total" t-value="debit_sum"/>
+                                        </t>
+                                    </t>
+                                </td>
+                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+                                    <t t-set="second_total" t-value="0"/>
+                                    <t t-if="combined_data_set and get_pdc_details">
+
+                                        <t t-if="prev_total == 3">
+                                            <span t-esc="'{0:,.2f}'.format(credit_sum + pdc_tot + previous_total)"/>
+                                            <t t-set="second_total" t-value="credit_sum + pdc_tot + previous_total"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="'{0:,.2f}'.format(credit_sum + pdc_tot)"/>
+                                            <t t-set="second_total" t-value="credit_sum + pdc_tot"/>
+                                        </t>
+                                    </t>
+                                    <t t-elif="combined_data_set">
+                                        <t t-if="prev_total == 3">
+                                            <span t-esc="'{0:,.2f}'.format(credit_sum + previous_total)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="'{0:,.2f}'.format(credit_sum)"/>
+                                        </t>
+                                    </t>
+                                </td>
+                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+
+                                    <span t-esc="'{0:,.2f}'.format(first_total - second_total)"/>
+
+                                    <span t-if="balance &lt; 0">
+                                        Cr
+                                    </span>
+                                    <span t-else="">
+                                        Dr
+                                    </span>
+                                </td>
+                            </tr>
+                        </t>
+                        <t t-else="">
+                            <tr>
+
+                                <td style=" font-size:15px;color: red;font-weight: bold;text-align:center;width:100px"></td>
+                                <td style=" font-size:15px;color: red;font-weight: bold;text-align:center;width:130px"></td>
+                                <td style=" font-size:15px;color: red;font-weight: bold;text-align:center;width:180px"></td>
+                                <td style=" font-size:15px;color: red;font-weight: bold;text-align:center;width:100px"></td>
+                                <td style=" font-size:15px;color: red;font-weight: bold;text-align:center;width:100px">
+
+                                </td>
+                                <!--                                            <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">-->
+
+                                <!--                                            </td>-->
+                                <td style="width:130px"></td>
+                                <td style="width:120px;font-size:15px;color: red;font-weight: bold;text-align:center">
+                                    Total
+                                </td>
+                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;width:85px">
+                                    <t t-if="combined_data_set">
+                                        <t t-if="prev_total == 2">
+                                            <span t-esc="'{0:,.2f}'.format(debit_sum + previous_total)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="'{0:,.2f}'.format(debit_sum)"/>
+                                        </t>
+                                    </t>
+                                </td>
+                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;width:90px">
+                                    <t t-if="combined_data_set and get_pdc_details">
+                                        <t t-if="prev_total == 3">
+                                            <span t-esc="'{0:,.2f}'.format(credit_sum + pdc_tot + previous_total)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="'{0:,.2f}'.format(credit_sum + pdc_tot)"/>
+                                        </t>
+                                    </t>
+                                    <t t-elif="combined_data_set">
+                                        <t t-if="prev_total == 3">
+                                            <span t-esc="'{0:,.2f}'.format(credit_sum  + previous_total)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="'{0:,.2f}'.format(credit_sum )"/>
+                                        </t>
+
+                                    </t>
+                                </td>
+                                <td style="width:115px"></td>
+                            </tr>
+
+
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+
+                                </td>
+                                <!--                                            <td></td>-->
+                                <td></td>
+                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+                                     Report Total
+                                </td>
+                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+                                    <t t-set="first_total" t-value="0"/>
+                                    <t t-if="combined_data_set">
+                                        <t t-if="prev_total == 2">
+                                            <span t-esc="'{0:,.2f}'.format(debit_sum + previous_total)"/>
+                                            <t t-set="first_total" t-value="debit_sum + previous_total"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="'{0:,.2f}'.format(debit_sum)"/>
+                                            <t t-set="first_total" t-value="debit_sum"/>
+                                        </t>
+                                    </t>
+                                </td>
+                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+                                    <t t-set="second_total" t-value="0"/>
+                                    <t t-if="combined_data_set and get_pdc_details">
+
+                                        <t t-if="prev_total == 3">
+                                            <span t-esc="'{0:,.2f}'.format(credit_sum + pdc_tot + previous_total)"/>
+                                            <t t-set="second_total" t-value="credit_sum + pdc_tot + previous_total"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="'{0:,.2f}'.format(credit_sum + pdc_tot)"/>
+                                            <t t-set="second_total" t-value="credit_sum + pdc_tot"/>
+                                        </t>
+                                    </t>
+                                    <t t-elif="combined_data_set">
+                                        <t t-if="prev_total == 3">
+                                            <span t-esc="'{0:,.2f}'.format(credit_sum + previous_total)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="'{0:,.2f}'.format(credit_sum)"/>
+                                        </t>
+                                    </t>
+                                </td>
+                                <td style="font-size:15px;color: red;font-weight: bold;text-align:center;">
+
+                                    <span t-esc="'{0:,.2f}'.format(get_grand_total_amount)"/>
+
+                                    <t t-if="get_grand_total_amount">
+                                        <span t-if="get_grand_total_amount &lt; 0">
+                                        Cr
+                                    </span>
+                                    <span t-else="">
+                                        Dr
+                                    </span>
+                                    </t>
+                                </td>
+                            </tr>
+                        </t>
+
+                    </table>
+
+
+                </div>
+            </div>
+        </t>
+
+    </template>
+</odoo>
